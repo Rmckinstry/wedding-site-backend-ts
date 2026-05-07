@@ -109,7 +109,8 @@ export const createRSVPAdditonal = async (additional, groupId, providedClient = 
         additional : {
             name : string,
             type : 'plus_one' | 'dependent',
-            guestId : number
+            guestId : number,
+            dietaryRestriction : string
         }
     */
 
@@ -156,10 +157,10 @@ export const createRSVPAdditonal = async (additional, groupId, providedClient = 
 
             //create rsvp with new guest id
             const newAdditonalRSVP = await client.query(
-                `INSERT INTO ${tableName} (guest_id, attendance, spotify, created_at)
-                VALUES ($1, $2, $3, $4)
+                `INSERT INTO ${tableName} (guest_id, attendance, spotify, dietary_restrictions, created_at)
+                VALUES ($1, $2, $3, $4, $5)
                 RETURNING *`,
-                [newGuestId, true, "", timestamp]
+                [newGuestId, true, "", guest.dietaryRestriction, timestamp]
             );
 
             //use primary guest id and switch plus one to false if applicable
