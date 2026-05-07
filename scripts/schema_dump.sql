@@ -103,6 +103,7 @@ CREATE TABLE public.rsvps (
     guest_id integer NOT NULL,
     attendance boolean,
     spotify character varying,
+    dietary_restrictions character varying,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );
