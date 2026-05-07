@@ -37,7 +37,7 @@ export const getGuestRSVP = async (guestId) => {
 export const getGroupRSVPs = async (groupId) => {
     try {
         const result = await db.query(
-            `SELECT g.guest_id, r.rsvp_id, r.attendance, r.spotify, r.created_at, r.updated_at
+            `SELECT g.guest_id, r.rsvp_id, r.attendance, r.spotify, r.dietary_restrictions, r.created_at, r.updated_at
             FROM guests AS g
             JOIN groups AS gp ON g.group_id = gp.id
             JOIN rsvps AS r ON g.guest_id = r.guest_id
@@ -75,14 +75,14 @@ export const createRSVPs = async (rsvpList) => {
         //creating main rsvps
         const createdRSVPs = [];
         for (const rsvp of rsvps) {
-            const { guestId, attendance, spotify } = rsvp;
+            const { guestId, attendance, spotify, dietaryRestriction } = rsvp;
             const timestamp = new Date().toISOString();
 
             const result = await client.query(
-                `INSERT INTO ${tableName} (guest_id, attendance, spotify, created_at)
-                    VALUES ($1, $2, $3, $4)
+                `INSERT INTO ${tableName} (guest_id, attendance, spotify, dietary_restrictions, created_at)
+                    VALUES ($1, $2, $3, $4, $5)
                     RETURNING *`,
-                [guestId, attendance, spotify, timestamp]
+                [guestId, attendance, spotify, dietaryRestriction, timestamp]
             );
             createdRSVPs.push(result.rows[0]);
         }
@@ -213,7 +213,7 @@ export const editAttendance = async (rsvpId, attendance) => {
 
         return result.rows
     } catch (error) {
-        console.error("Error at deleteRSVP", error);
+        console.error("Error at editAttendance", error);
         throw new Error(`Failed to edit RSVP attendance: ${error.message}`)
     }
 }
@@ -231,7 +231,27 @@ export const editSongs = async (rsvpId, songs) => {
 
         return result.rows
     } catch (error) {
-        console.error("Error at deleteRSVP", error);
+        console.error("Error at editSongs", error);
         throw new Error(`Failed to edit RSVP songs: ${error.message}`)
+    }
+}
+
+export const editDietaryRestrictions = async (rsvpId, dietaryRestriction) => {
+    try {
+        let updateTime = new Date().toISOString();
+
+        const result = await db.query(
+            `UPDATE ${tableName}
+            SET dietary_restrictions = $1, updated_at = $2
+            WHERE rsvp_id = $3
+            RETURNING *`,
+            [dietaryRestriction, updateTime, rsvpId]
+        )
+
+        return result.rows
+
+    } catch (error) {
+        console.error("Error at editDietaryRestrictions", error);
+        throw new Error(`Failed to edit RSVP dietary restriction: ${error.message}`)
     }
 }

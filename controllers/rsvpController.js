@@ -7,7 +7,8 @@ import {
     getGroupRSVPs,
     editAttendance,
     createRSVPAdditonal,
-    editSongs
+    editSongs,
+    editDietaryRestrictions
 } from '../services/rsvpService.js';
 import { isNumber } from '../utils/utils.js'
 
@@ -254,5 +255,36 @@ export const editSongsHandler = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: 500, message: `Internal Server Error - Error when updating songs.`, error: error.message });
+    }
+}
+
+export const editDietaryRestrictionHandler = async (req, res) => {
+    try {
+        const { rsvpId } = req.params;
+        const { dietaryRestriction } = req.body;
+
+        if (!rsvpId || !isNumber(rsvpId)) {
+            return res.status(400).json({ status: 400, message: "rsvpId must be a valid integer" });
+        }
+
+        if (typeof dietaryRestriction !== "string") {
+            return res.status(400).json({ status: 400, message: "dietaryRestriction must be type string" });
+        }
+
+        const result = await editDietaryRestrictions(rsvpId, dietaryRestriction);
+
+        if (result.length === 0) {
+            return res.status(404).json({ status: 404, message: 'RSVP not found' });
+        }
+
+        res.status(200).json({
+            status: 200,
+            message: `Dietary restriction updated for RSVP ${rsvpId}`,
+            data: result,
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 500, message: `Internal Server Error - Error when updating dietary restriction.`, error: error.message })
     }
 }
