@@ -74,7 +74,8 @@ CREATE TABLE public.guests (
     has_dependents boolean DEFAULT false,
     added_by_guest_id integer,
     additional_guest_type character varying,
-    song_requests integer DEFAULT 2
+    song_requests integer DEFAULT 2,
+    after_party boolean DEFAULT false,
 );
 
 
@@ -105,7 +106,8 @@ CREATE TABLE public.rsvps (
     spotify character varying,
     dietary_restrictions character varying,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    after_party_attending boolean,
 );
 
 

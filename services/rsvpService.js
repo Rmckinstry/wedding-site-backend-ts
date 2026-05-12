@@ -37,7 +37,7 @@ export const getGuestRSVP = async (guestId) => {
 export const getGroupRSVPs = async (groupId) => {
     try {
         const result = await db.query(
-            `SELECT g.guest_id, r.rsvp_id, r.attendance, r.spotify, r.dietary_restrictions, r.created_at, r.updated_at
+            `SELECT g.guest_id, r.rsvp_id, r.attendance, r.spotify, r.dietary_restrictions, r.created_at, r.updated_at, r.after_party_attending
             FROM guests AS g
             JOIN groups AS gp ON g.group_id = gp.id
             JOIN rsvps AS r ON g.guest_id = r.guest_id
@@ -75,14 +75,14 @@ export const createRSVPs = async (rsvpList) => {
         //creating main rsvps
         const createdRSVPs = [];
         for (const rsvp of rsvps) {
-            const { guestId, attendance, spotify, dietaryRestriction } = rsvp;
+            const { guestId, attendance, spotify, dietaryRestriction, afterParty } = rsvp;
             const timestamp = new Date().toISOString();
 
             const result = await client.query(
-                `INSERT INTO ${tableName} (guest_id, attendance, spotify, dietary_restrictions, created_at)
-                    VALUES ($1, $2, $3, $4, $5)
+                `INSERT INTO ${tableName} (guest_id, attendance, spotify, dietary_restrictions, created_at, after_party_attending)
+                    VALUES ($1, $2, $3, $4, $5, $6)
                     RETURNING *`,
-                [guestId, attendance, spotify, dietaryRestriction, timestamp]
+                [guestId, attendance, spotify, dietaryRestriction, timestamp, afterParty]
             );
             createdRSVPs.push(result.rows[0]);
         }
