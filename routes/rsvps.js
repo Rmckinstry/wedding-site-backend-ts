@@ -9,7 +9,8 @@ import {
     editAttendanceHandler,
     createAdditonalHandler,
     editSongsHandler,
-    editDietaryRestrictionHandler
+    editDietaryRestrictionHandler,
+    editAfterPartyHandler
 } from '../controllers/rsvpController.js';
 const router = express.Router();
 
@@ -25,6 +26,7 @@ router.post('/additional', createAdditonalHandler)
 router.patch('/attendance/:rsvpId', editAttendanceHandler);
 router.patch('/songs/:rsvpId', editSongsHandler);
 router.patch('/diet/:rsvpId', editDietaryRestrictionHandler);
+router.patch('/party/:rsvpId', editAfterPartyHandler);
 
 // DELETE
 router.delete('/:rsvpId', deleteRSVPHandler);

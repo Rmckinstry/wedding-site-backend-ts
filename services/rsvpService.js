@@ -256,3 +256,21 @@ export const editDietaryRestrictions = async (rsvpId, dietaryRestriction) => {
         throw new Error(`Failed to edit RSVP dietary restriction: ${error.message}`)
     }
 }
+
+export const editAfterPartyAttendance = async (rsvpId, attendance) => {
+    try {
+        let updateTime = new Date().toISOString();
+        const result = await db.query(
+            `UPDATE ${tableName}
+            SET after_party_attending = $1, updated_at = $2
+            WHERE rsvp_id = $3
+            RETURNING *`,
+            [attendance, updateTime, rsvpId]
+        )
+
+        return result.rows
+    } catch (error) {
+        console.error("Error at editAfterPartyAttendance", error);
+        throw new Error(`Failed to edit After party attendance: ${error.message}`)
+    }
+}
