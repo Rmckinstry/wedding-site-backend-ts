@@ -9,6 +9,7 @@ import {
     editPlusOneAllowed,
     deleteGuest,
     editEmail,
+    editAfterParty,
 } from "../controllers/guestController.js";
 
 const router = express.Router();
@@ -28,6 +29,7 @@ router.put("/:guestId", editGuest);
 router.patch("/dependent/:guestId", editHasDependent);
 router.patch("/plus-one/:guestId", editPlusOneAllowed);
 router.patch("/email/:guestId", editEmail);
+router.patch("/afterParty/:guestId", editAfterParty);
 
 // DELETE
 router.delete("/:guestId", deleteGuest);

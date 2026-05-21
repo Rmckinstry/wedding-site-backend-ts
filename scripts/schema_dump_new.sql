@@ -18,7 +18,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: groups_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: groups_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.groups_id_seq
@@ -29,14 +29,12 @@ CREATE SEQUENCE public.groups_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.groups_id_seq OWNER TO postgres;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: groups; Type: TABLE; Schema: public; Owner: postgres
+-- Name: groups; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.groups (
@@ -45,10 +43,8 @@ CREATE TABLE public.groups (
 );
 
 
-ALTER TABLE public.groups OWNER TO postgres;
-
 --
--- Name: guests_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: guests_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.guests_id_seq
@@ -59,10 +55,8 @@ CREATE SEQUENCE public.guests_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.guests_id_seq OWNER TO postgres;
-
 --
--- Name: guests; Type: TABLE; Schema: public; Owner: postgres
+-- Name: guests; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.guests (
@@ -74,14 +68,13 @@ CREATE TABLE public.guests (
     has_dependents boolean DEFAULT false,
     added_by_guest_id integer,
     additional_guest_type character varying,
-    song_requests integer DEFAULT 2
+    song_requests integer DEFAULT 1,
+    after_party boolean DEFAULT false
 );
 
 
-ALTER TABLE public.guests OWNER TO postgres;
-
 --
--- Name: rsvps_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: rsvps_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.rsvps_id_seq
@@ -92,10 +85,8 @@ CREATE SEQUENCE public.rsvps_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.rsvps_id_seq OWNER TO postgres;
-
 --
--- Name: rsvps; Type: TABLE; Schema: public; Owner: postgres
+-- Name: rsvps; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.rsvps (
@@ -104,14 +95,14 @@ CREATE TABLE public.rsvps (
     attendance boolean,
     spotify character varying,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    dietary_restrictions character varying,
+    after_party_attending boolean
 );
 
 
-ALTER TABLE public.rsvps OWNER TO postgres;
-
 --
--- Name: groups groups_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: groups groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.groups
@@ -119,7 +110,7 @@ ALTER TABLE ONLY public.groups
 
 
 --
--- Name: rsvps rsvps_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: rsvps rsvps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rsvps
@@ -127,7 +118,7 @@ ALTER TABLE ONLY public.rsvps
 
 
 --
--- Name: guests users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: guests users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.guests
@@ -135,7 +126,7 @@ ALTER TABLE ONLY public.guests
 
 
 --
--- Name: guests added_by_guest_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: guests added_by_guest_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.guests
@@ -143,7 +134,7 @@ ALTER TABLE ONLY public.guests
 
 
 --
--- Name: guests group_id_users_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: guests group_id_users_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.guests
@@ -151,7 +142,7 @@ ALTER TABLE ONLY public.guests
 
 
 --
--- Name: rsvps rsvps_guests_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: rsvps rsvps_guests_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rsvps

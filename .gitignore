@@ -2,3 +2,4 @@
 node_modules/
 .env
 guest_data.json
+Guests.xlsx

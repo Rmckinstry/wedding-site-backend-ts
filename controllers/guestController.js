@@ -76,17 +76,17 @@ export const getGuestsByGroup = async (req, res) => {
 // POST
 export const createGuest = async (req, res) => {
     try {
-        const { name, email, plusOneAllowed, hasDependents, groupId, songRequests } = req.body;
+        const { name, email, plusOneAllowed, hasDependents, groupId, songRequests, afterParty } = req.body;
 
         if (!name || groupId === undefined || isNaN(groupId) || typeof plusOneAllowed !== 'boolean' || typeof hasDependents !== 'boolean' || isNaN(songRequests)) {
-            return res.status(400).json({ status: 400, message: "Missing or invalid required guest fields (name, email, groupId, plusOneAllowed, hasDependents, songRequests)" });
+            return res.status(400).json({ status: 400, message: "Missing or invalid required guest fields (name, email, groupId, plusOneAllowed, hasDependents, songRequests, afterParty)" });
         }
 
         const result = await db.query(
-            `INSERT INTO ${tableName} (name, email, plus_one_allowed, has_dependents, group_id, song_requests) 
-            VALUES ($1, $2, $3, $4, $5, $6) 
+            `INSERT INTO ${tableName} (name, email, plus_one_allowed, has_dependents, group_id, song_requests, after_party) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7) 
             RETURNING *`,
-            [name, email, plusOneAllowed, hasDependents, groupId, songRequests]
+            [name, email, plusOneAllowed, hasDependents, groupId, songRequests, afterParty]
         );
         res.status(201).json({
             status: 201,
@@ -108,18 +108,18 @@ export const editGuest = async (req, res) => {
             return res.status(400).json({ status: 400, message: 'id needs to be a valid number.' })
         }
 
-        const { name, email, plusOneAllowed, hasDependents, groupId, addedByGuestId, additionalGuestType, songRequests } = req.body;
+        const { name, email, plusOneAllowed, hasDependents, groupId, addedByGuestId, additionalGuestType, songRequests, afterParty } = req.body;
 
         if (!name || groupId === undefined || isNaN(groupId) || typeof plusOneAllowed !== 'boolean' || typeof hasDependents !== 'boolean' || isNaN(songRequests)) {
-            return res.status(400).json({ status: 400, message: "Missing or invalid required guest fields (name, email, groupId, plusOneAllowed, hasDependents, songRequests)" });
+            return res.status(400).json({ status: 400, message: "Missing or invalid required guest fields (name, email, groupId, plusOneAllowed, hasDependents, songRequests, afterParty)" });
         }
 
         const result = await db.query(
             `UPDATE ${tableName} 
-            SET name = $1, email = $2, plus_one_allowed = $3, has_dependents = $4, group_id = $5, added_by_guest_id = $6, additional_guest_type = $7, song_requests = $8 
-            WHERE guest_id = $9
+            SET name = $1, email = $2, plus_one_allowed = $3, has_dependents = $4, group_id = $5, added_by_guest_id = $6, additional_guest_type = $7, song_requests = $8, after_party = $9
+            WHERE guest_id = $10
             RETURNING *`,
-            [name, email, plusOneAllowed, hasDependents, groupId, addedByGuestId, additionalGuestType, songRequests, guestId]
+            [name, email, plusOneAllowed, hasDependents, groupId, addedByGuestId, additionalGuestType, songRequests, afterParty, guestId]
         );
 
         if (result.rowCount === 0) {
@@ -202,6 +202,42 @@ export const editPlusOneAllowed = async (req, res) => {
         res.status(200).json({
             status: 200,
             message: "Plus One Allowed Flag Updated",
+            data: result.rows[0],
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 500, message: "Internal Server Error", error: error.message });
+    }
+};
+
+export const editAfterParty = async (req, res) => {
+    try {
+        const { guestId } = req.params;
+        const { afterParty } = req.body;
+
+        if (!isNumber(guestId)) {
+            return res.status(400).json({ status: 400, message: 'id needs to be a valid number.' })
+        }
+
+        if (typeof afterParty !== 'boolean') {
+            return res.status(400).json({ status: 400, message: 'afterParty flag is required and needs to be a boolean value.' })
+        }
+
+        const result = await db.query(
+            `UPDATE ${tableName}
+            SET after_party = $1
+            WHERE guest_id = $2
+            RETURNING *`,
+            [afterParty, guestId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ status: 404, message: "Guest not found" });
+        }
+
+        res.status(200).json({
+            status: 200,
+            message: "After PArty Flag Updated",
             data: result.rows[0],
         });
     } catch (error) {
