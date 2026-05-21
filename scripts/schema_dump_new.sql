@@ -68,7 +68,7 @@ CREATE TABLE public.guests (
     has_dependents boolean DEFAULT false,
     added_by_guest_id integer,
     additional_guest_type character varying,
-    song_requests integer DEFAULT 2,
+    song_requests integer DEFAULT 1,
     after_party boolean DEFAULT false
 );
 
