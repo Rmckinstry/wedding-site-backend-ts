@@ -126,6 +126,15 @@ export const editGuest = async (req, res) => {
             return res.status(404).json({ status: 404, message: 'Guest not found' });
         }
 
+        if (afterParty === false) {
+            await db.query(
+                `UPDATE rsvps
+                SET after_party_attending = NULL
+                WHERE guest_id = $1`,
+                [guestId]
+            );
+        }
+
         res.status(200).json({
             status: 200,
             message: "Guest updated successfully",
@@ -223,6 +232,7 @@ export const editAfterParty = async (req, res) => {
             return res.status(400).json({ status: 400, message: 'afterParty flag is required and needs to be a boolean value.' })
         }
 
+        //Update the guest's after_party access flag
         const result = await db.query(
             `UPDATE ${tableName}
             SET after_party = $1
@@ -233,6 +243,16 @@ export const editAfterParty = async (req, res) => {
 
         if (result.rowCount === 0) {
             return res.status(404).json({ status: 404, message: "Guest not found" });
+        }
+
+        // nullify their RSVP selection for it.
+        if (afterParty === false) {
+            await db.query(
+                `UPDATE rsvps
+                SET after_party_attending = NULL
+                WHERE guest_id = $1`,
+                [guestId]
+            );
         }
 
         res.status(200).json({
