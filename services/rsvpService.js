@@ -258,7 +258,30 @@ export const editDietaryRestrictions = async (rsvpId, dietaryRestriction) => {
 }
 
 export const editAfterPartyAttendance = async (rsvpId, attendance) => {
+
     try {
+        // Grabbing RSVP details
+        const rsvp = (await db.query(`SELECT * FROM ${tableName} WHERE rsvp_id = $1`, [rsvpId])).rows[0];
+        if (!rsvp) {
+            throw new Error("Error retriving RSVP");
+        }
+
+        // Grabbing Guest details
+        const guest = (await db.query(`SELECT * FROM guests WHERE guest_id = $1`, [rsvp.guest_id])).rows[0];
+        if (!guest) {
+            throw new Error("Error retriving Guest");
+        }
+
+        // Checking if guest has an invite
+        if (!guest.after_party) {
+            throw new Error("Guest does not have an after party invite to edit.");
+        }
+
+        // Checking to see if trying to switch to attending after party but isn't attending wedding
+        if (!rsvp.attendance && attendance === true) {
+            throw new Error("Cannot switch after party attendance to true, when wedding attendance is false.");
+        }
+
         let updateTime = new Date().toISOString();
         const result = await db.query(
             `UPDATE ${tableName}
@@ -271,6 +294,6 @@ export const editAfterPartyAttendance = async (rsvpId, attendance) => {
         return result.rows
     } catch (error) {
         console.error("Error at editAfterPartyAttendance", error);
-        throw new Error(`Failed to edit After party attendance: ${error.message}`)
+        throw new Error(`Failed to edit after party attendance: ${error.message}`)
     }
 }

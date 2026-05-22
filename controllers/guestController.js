@@ -237,7 +237,7 @@ export const editAfterParty = async (req, res) => {
 
         res.status(200).json({
             status: 200,
-            message: "After PArty Flag Updated",
+            message: "After Party Flag Updated",
             data: result.rows[0],
         });
     } catch (error) {
