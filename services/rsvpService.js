@@ -147,7 +147,7 @@ export const createRSVPAdditonal = async (additional, groupId, providedClient = 
             const timestamp = new Date().toISOString();
 
             // create Guest record for additional guest
-            const newGuest = await db.query(
+            const newGuest = await client.query(
                 `INSERT INTO guests (name, email, plus_one_allowed, has_dependents, group_id, added_by_guest_id, additional_guest_type, song_requests) 
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
                 RETURNING *`,
@@ -165,7 +165,7 @@ export const createRSVPAdditonal = async (additional, groupId, providedClient = 
 
             //use primary guest id and switch plus one to false if applicable
             if (guest.type === "plus_one" && plusOneAllowed) {
-                const result = await db.query(
+                const result = await client.query(
                     `UPDATE guests
                     SET plus_one_allowed = $1
                     WHERE guest_id = $2
@@ -186,7 +186,7 @@ export const createRSVPAdditonal = async (additional, groupId, providedClient = 
         console.error("Error creating additional guest & RSVPs:", error);
         throw error;
     } finally {
-        if (isOwnClient && client) client.release;
+        if (isOwnClient && client) client.release();
     }
 }
 
